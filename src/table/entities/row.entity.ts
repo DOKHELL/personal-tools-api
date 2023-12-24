@@ -15,7 +15,9 @@ export class RowEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => TableEntity, (table) => table.rows)
+  @ManyToOne(() => TableEntity, (table) => table.rows, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'table_id' })
   table: TableEntity;
 

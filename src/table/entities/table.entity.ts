@@ -20,7 +20,9 @@ export class TableEntity {
   @Column()
   name: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.tables)
+  @ManyToOne(() => UserEntity, (user) => user.tables, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 

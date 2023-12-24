@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { TableEntity } from 'src/table/entities/table.entity';
 import { CellEntity } from 'src/table/entities/cell.entity';
+import { ColumnTypeEnum } from 'src/table/enums/column.enum';
 
 @Entity({ name: 'columns' })
 export class ColumnEntity {
@@ -20,12 +21,17 @@ export class ColumnEntity {
   name: string;
 
   @Column()
-  type: string;
+  type: ColumnTypeEnum;
 
   @Column()
   orderIndex: number;
 
-  @ManyToOne(() => TableEntity, (table) => table.columns)
+  @Column()
+  width: number;
+
+  @ManyToOne(() => TableEntity, (table) => table.columns, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'table_id' })
   table: TableEntity;
 

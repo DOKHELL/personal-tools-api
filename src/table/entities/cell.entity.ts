@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { RowEntity } from 'src/table/entities/row.entity';
 import { ColumnEntity } from 'src/table/entities/column.entity';
+import { CellValueType } from 'src/table/types/cell.types';
 
 @Entity({ name: 'cells' })
 export class CellEntity {
@@ -16,13 +17,15 @@ export class CellEntity {
   id: number;
 
   @Column('text')
-  value: string;
+  value: CellValueType;
 
-  @ManyToOne(() => RowEntity, (row) => row.cells)
+  @ManyToOne(() => RowEntity, (row) => row.cells, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'row_id' })
   row: RowEntity;
 
-  @ManyToOne(() => ColumnEntity, (column) => column.cells)
+  @ManyToOne(() => ColumnEntity, (column) => column.cells, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'column_id' })
   column: ColumnEntity;
 
