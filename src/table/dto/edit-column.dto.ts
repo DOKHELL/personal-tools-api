@@ -9,8 +9,8 @@ export class EditColumnDto {
     message:
       'At least one of the fields (name, type, width, newOrderIndex) is required',
   })
-  orderIndex: number;
-  name: string;
-  type: ColumnTypeEnum;
-  width: number;
+  orderIndex?: number;
+  name?: string;
+  type?: ColumnTypeEnum;
+  width?: number;
 }

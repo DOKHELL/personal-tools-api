@@ -11,6 +11,7 @@ import {
 import { TableEntity } from 'src/table/entities/table.entity';
 import { CellEntity } from 'src/table/entities/cell.entity';
 import { ColumnTypeEnum } from 'src/table/enums/column.enum';
+import { StatusEntity } from 'src/table/entities/status.entity';
 
 @Entity({ name: 'columns' })
 export class ColumnEntity {
@@ -37,6 +38,11 @@ export class ColumnEntity {
 
   @OneToMany(() => CellEntity, (cell) => cell.column, { onDelete: 'CASCADE' })
   cells: CellEntity[];
+
+  @OneToMany(() => StatusEntity, (status) => status.column, {
+    onDelete: 'CASCADE',
+  })
+  statuses: StatusEntity[];
 
   @CreateDateColumn()
   createAt: Date;

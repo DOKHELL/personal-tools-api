@@ -6,6 +6,7 @@ import { TableEntity } from 'src/table/entities/table.entity';
 import { RowEntity } from 'src/table/entities/row.entity';
 import { ColumnEntity } from 'src/table/entities/column.entity';
 import { CellEntity } from 'src/table/entities/cell.entity';
+import { StatusEntity } from 'src/table/entities/status.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CellEntity } from 'src/table/entities/cell.entity';
       RowEntity,
       ColumnEntity,
       CellEntity,
+      StatusEntity,
     ]),
   ],
   controllers: [TableController],
