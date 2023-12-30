@@ -9,15 +9,19 @@ import {
 } from 'typeorm';
 import { RowEntity } from 'src/table/entities/row.entity';
 import { ColumnEntity } from 'src/table/entities/column.entity';
-import { CellValueType } from 'src/table/types/cell.types';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'cells' })
 export class CellEntity {
+  @ApiProperty({ description: 'The unique identifier of the cell' })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({
+    description: 'The value stored in the cell',
+  })
   @Column('text')
-  value: CellValueType;
+  value: string;
 
   @ManyToOne(() => RowEntity, (row) => row.cells, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'row_id' })
@@ -29,9 +33,11 @@ export class CellEntity {
   @JoinColumn({ name: 'column_id' })
   column: ColumnEntity;
 
+  @ApiProperty({ description: 'Timestamp of when the cell was created' })
   @CreateDateColumn()
-  createAt: Date;
+  createdAt: Date;
 
+  @ApiProperty({ description: 'Timestamp of the last update to the cell' })
   @UpdateDateColumn()
   updatedAt: Date;
 }

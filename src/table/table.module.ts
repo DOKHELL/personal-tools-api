@@ -9,15 +9,7 @@ import { CellEntity } from 'src/table/entities/cell.entity';
 import { StatusEntity } from 'src/table/entities/status.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      TableEntity,
-      RowEntity,
-      ColumnEntity,
-      CellEntity,
-      StatusEntity,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([TableEntity, RowEntity, ColumnEntity, CellEntity, StatusEntity])],
   controllers: [TableController],
   providers: [TableService],
 })

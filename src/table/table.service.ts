@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TableEntity } from 'src/table/entities/table.entity';
@@ -58,9 +53,7 @@ export class TableService {
 
       const columns = await manager.save(ColumnEntity, _columns);
 
-      const statusColumn = columns.find(
-        (col) => col.type === ColumnTypeEnum.Status,
-      );
+      const statusColumn = columns.find((col) => col.type === ColumnTypeEnum.Status);
 
       const statuses = defaultStatuses.map((status) => {
         return manager.create(StatusEntity, {
@@ -73,6 +66,13 @@ export class TableService {
 
       const { user, ...result } = table;
       return result;
+    });
+  }
+
+  async getTableByUserId(userId: number) {
+    return await this.tableRepository.find({
+      where: { user: { id: userId } },
+      order: { id: 'ASC' },
     });
   }
 
@@ -120,7 +120,8 @@ export class TableService {
     }
 
     table.name = name;
-    return await this.tableRepository.save(table);
+    const { user, ...result } = await this.tableRepository.save(table);
+    return result;
   }
 
   async deleteTable(tableId: number, userId: number) {
@@ -196,10 +197,7 @@ export class TableService {
     await this.rowRepository.remove(row);
   }
 
-  async createColumn(
-    { name, type, width, tableId }: CreateColumnDto,
-    userId: number,
-  ) {
+  async createColumn({ name, type, width, tableId }: CreateColumnDto, userId: number) {
     return await this.dataSource.transaction(async (manager) => {
       const isStatusColumn = type === ColumnTypeEnum.Status;
       const _table = await manager.findOne(TableEntity, {
@@ -220,9 +218,7 @@ export class TableService {
         order: { orderIndex: 'ASC' },
       });
 
-      const isColumnWithStatusExist = columns.some(
-        (c) => c.type === ColumnTypeEnum.Status,
-      );
+      const isColumnWithStatusExist = columns.some((c) => c.type === ColumnTypeEnum.Status);
 
       if (isStatusColumn && isColumnWithStatusExist) {
         throw new BadRequestException('Table can only have one status column');
@@ -304,7 +300,8 @@ export class TableService {
         await this.moveColumn(orderIndex, columnId, manager);
       }
 
-      return await manager.save(ColumnEntity, column);
+      const { table, ...result } = await manager.save(ColumnEntity, column);
+      return result;
     });
   }
 
@@ -336,11 +333,7 @@ export class TableService {
     });
   }
 
-  async moveColumn(
-    newOrderIndex: number,
-    columnId: number,
-    manager: EntityManager,
-  ) {
+  async moveColumn(newOrderIndex: number, columnId: number, manager: EntityManager) {
     const column = await manager.findOne(ColumnEntity, {
       where: { id: columnId },
       relations: ['table', 'table.columns'],
@@ -392,8 +385,7 @@ export class TableService {
       switch (columnType) {
         case ColumnTypeEnum.Status:
           const isValid = statusLabels.includes(value as string);
-          if (!isValid)
-            throw new BadRequestException('Value is not valid for column type');
+          if (!isValid) throw new BadRequestException('Value is not valid for column type');
           cell.value = value;
           break;
         case ColumnTypeEnum.Date:
@@ -489,12 +481,7 @@ export class TableService {
   async deleteStatus(statusId: number, userId: number) {
     const status = await this.statusRepository.findOne({
       where: { id: statusId },
-      relations: [
-        'column',
-        'column.statuses',
-        'column.table',
-        'column.table.user',
-      ],
+      relations: ['column', 'column.statuses', 'column.table', 'column.table.user'],
     });
 
     if (!status) {

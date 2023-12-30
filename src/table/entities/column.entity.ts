@@ -12,21 +12,27 @@ import { TableEntity } from 'src/table/entities/table.entity';
 import { CellEntity } from 'src/table/entities/cell.entity';
 import { ColumnTypeEnum } from 'src/table/enums/column.enum';
 import { StatusEntity } from 'src/table/entities/status.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'columns' })
 export class ColumnEntity {
+  @ApiProperty({ description: 'The unique identifier of the column' })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({ description: 'The name of the column' })
   @Column()
   name: string;
 
+  @ApiProperty({ description: 'The type of the column', enum: ColumnTypeEnum })
   @Column()
   type: ColumnTypeEnum;
 
+  @ApiProperty({ description: 'The order index of the column' })
   @Column()
   orderIndex: number;
 
+  @ApiProperty({ description: 'The width of the column' })
   @Column()
   width: number;
 
@@ -44,9 +50,11 @@ export class ColumnEntity {
   })
   statuses: StatusEntity[];
 
+  @ApiProperty({ description: 'Timestamp of when the column was created' })
   @CreateDateColumn()
-  createAt: Date;
+  createdAt: Date;
 
+  @ApiProperty({ description: 'Timestamp of the last update to the column' })
   @UpdateDateColumn()
   updatedAt: Date;
 }
