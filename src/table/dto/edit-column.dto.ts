@@ -10,12 +10,12 @@ export class EditColumnDto {
   @IsOneOfFieldsNotEmpty(['name', 'type', 'width', 'orderIndex'], {
     message: 'At least one of the fields (name, type, width, newOrderIndex) is required',
   })
-  @ApiProperty({ description: 'Column order index' })
+  @ApiProperty({ description: 'Column order index', required: false })
   orderIndex?: number;
-  @ApiProperty({ description: 'Column name' })
+  @ApiProperty({ description: 'Column name', required: false })
   name?: string;
-  @ApiProperty({ description: 'Column type' })
+  @ApiProperty({ description: 'Column type', required: false })
   type?: ColumnTypeEnum;
-  @ApiProperty({ description: 'Column width' })
+  @ApiProperty({ description: 'Column width', required: false })
   width?: number;
 }

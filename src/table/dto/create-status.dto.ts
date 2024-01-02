@@ -6,6 +6,9 @@ export class CreateStatusDto {
   @ApiProperty({ description: 'Column Id' })
   columnId: number;
   @IsNotEmpty({ message: 'Label is required' })
-  @ApiProperty({ description: 'Column label' })
+  @ApiProperty({ description: 'Status label' })
   label: string;
+  @IsNotEmpty({ message: 'Color is required' })
+  @ApiProperty({ description: 'Status color' })
+  color: string;
 }

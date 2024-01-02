@@ -45,7 +45,7 @@ export class TableService {
         manager.create(ColumnEntity, {
           name: colData.name,
           type: colData.type,
-          width: 200,
+          width: 135,
           orderIndex: colData.orderIndex,
           table: table,
         }),
@@ -58,6 +58,7 @@ export class TableService {
       const statuses = defaultStatuses.map((status) => {
         return manager.create(StatusEntity, {
           label: status.label,
+          color: status.color,
           column: statusColumn,
         });
       });
@@ -81,6 +82,7 @@ export class TableService {
       .createQueryBuilder('table')
       .leftJoinAndSelect('table.user', 'user')
       .leftJoinAndSelect('table.columns', 'column')
+      .leftJoinAndSelect('column.statuses', 'statuses')
       .leftJoinAndSelect('table.rows', 'row')
       .leftJoinAndSelect('row.cells', 'cell')
       .leftJoin('cell.column', 'cellColumn')
@@ -175,8 +177,11 @@ export class TableService {
       });
 
       await manager.save(CellEntity, cells);
-      const { table, ...result } = savedRow;
-      return result;
+      const row = await manager.findOne(RowEntity, {
+        where: { id: savedRow.id },
+        relations: ['cells'],
+      });
+      return row;
     });
   }
 
@@ -233,7 +238,7 @@ export class TableService {
         table: { id: tableId },
         type,
         name,
-        width: width || 200,
+        width: width || 90,
         orderIndex: columns.length,
       });
 
@@ -253,6 +258,7 @@ export class TableService {
         const statuses = defaultStatuses.map((status) => {
           return manager.create(StatusEntity, {
             label: status.label,
+            color: status.color,
             column: savedColumn,
           });
         });
@@ -433,7 +439,7 @@ export class TableService {
     return column.statuses.sort((a, b) => a.id - b.id);
   }
 
-  async createStatus({ columnId, label }: CreateStatusDto, userId: number) {
+  async createStatus({ columnId, label, color }: CreateStatusDto, userId: number) {
     const column_ = await this.columnRepository.findOne({
       where: { id: columnId },
       relations: ['table', 'table.user'],
@@ -447,7 +453,7 @@ export class TableService {
       throw new UnauthorizedException('You have not permission');
     }
 
-    const newStatus = this.statusRepository.create({ label, column: column_ });
+    const newStatus = this.statusRepository.create({ label, color, column: column_ });
 
     const status = await this.statusRepository.save(newStatus);
 
@@ -456,7 +462,7 @@ export class TableService {
     return result;
   }
 
-  async updateStatus({ statusId, label }: UpdateStatusDto, userId: number) {
+  async updateStatus({ statusId, label, color }: UpdateStatusDto, userId: number) {
     const status = await this.statusRepository.findOne({
       where: { id: statusId },
       relations: ['column', 'column.table', 'column.table.user'],
@@ -470,7 +476,8 @@ export class TableService {
       throw new UnauthorizedException('You have not permission');
     }
 
-    status.label = label;
+    if (label) status.label = label;
+    if (color) status.color = color;
 
     const newStatus = await this.statusRepository.save(status);
     const { column, ...result } = newStatus;

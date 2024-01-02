@@ -20,6 +20,10 @@ export class StatusEntity {
   @Column()
   label: string;
 
+  @ApiProperty({ description: 'The color of the status' })
+  @Column()
+  color: string;
+
   @ManyToOne(() => ColumnEntity, (column) => column.statuses, {
     onDelete: 'CASCADE',
   })

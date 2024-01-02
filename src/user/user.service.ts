@@ -15,7 +15,8 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, username, password: pass } = createUserDto;
+    const { email, username, password: pass, passwordConfirm } = createUserDto;
+    if (pass !== passwordConfirm) throw new BadRequestException('Passwords do not match');
     const emailExist = await this.userRepository.findOne({ where: { email } });
     if (emailExist) throw new BadRequestException('Email already used');
 
