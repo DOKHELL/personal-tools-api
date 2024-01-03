@@ -11,7 +11,7 @@ import {
 import { UserEntity } from 'src/user/entities/user.entity';
 import { ColumnEntity } from 'src/table/entities/column.entity';
 import { RowEntity } from 'src/table/entities/row.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'tables' })
 export class TableEntity {
@@ -23,17 +23,18 @@ export class TableEntity {
   @Column()
   name: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => UserEntity, (user) => user.tables, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @OneToMany(() => ColumnEntity, (column) => column.table, {
-    onDelete: 'CASCADE',
-  })
+  @ApiProperty({ description: 'The columns of the table', type: () => [ColumnEntity] })
+  @OneToMany(() => ColumnEntity, (column) => column.table, { onDelete: 'CASCADE' })
   columns: ColumnEntity[];
 
+  @ApiProperty({ description: 'The rows of the table', type: () => [RowEntity] })
   @OneToMany(() => RowEntity, (row) => row.table, { onDelete: 'CASCADE' })
   rows: RowEntity[];
 

@@ -7,9 +7,9 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { TableEntity } from 'src/table/entities/table.entity';
 import { CellEntity } from 'src/table/entities/cell.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { TableEntity } from 'src/table/entities/table.entity';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'rows' })
 export class RowEntity {
@@ -17,14 +17,16 @@ export class RowEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => CellEntity, (cell) => cell.row, { onDelete: 'CASCADE' })
-  cells: CellEntity[];
-
+  @ApiHideProperty()
   @ManyToOne(() => TableEntity, (table) => table.rows, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'table_id' })
   table: TableEntity;
+
+  @ApiProperty({ description: 'The cells of the row', type: () => [CellEntity] })
+  @OneToMany(() => CellEntity, (cell) => cell.row, { onDelete: 'CASCADE' })
+  cells: CellEntity[];
 
   @ApiProperty({ description: 'Timestamp of when the row was created' })
   @CreateDateColumn()

@@ -8,7 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { ColumnEntity } from 'src/table/entities/column.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'statuses' })
 export class StatusEntity {
@@ -24,6 +24,7 @@ export class StatusEntity {
   @Column()
   color: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => ColumnEntity, (column) => column.statuses, {
     onDelete: 'CASCADE',
   })

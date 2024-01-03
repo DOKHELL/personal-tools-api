@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { RowEntity } from 'src/table/entities/row.entity';
 import { ColumnEntity } from 'src/table/entities/column.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'cells' })
 export class CellEntity {
@@ -17,16 +17,16 @@ export class CellEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({
-    description: 'The value stored in the cell',
-  })
+  @ApiProperty({ description: 'The value stored in the cell' })
   @Column('text')
   value: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => RowEntity, (row) => row.cells, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'row_id' })
   row: RowEntity;
 
+  @ApiHideProperty()
   @ManyToOne(() => ColumnEntity, (column) => column.cells, {
     onDelete: 'CASCADE',
   })

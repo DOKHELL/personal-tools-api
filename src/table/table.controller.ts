@@ -24,12 +24,22 @@ import { UpdateTableDto } from 'src/table/dto/update-table.dto';
 import { UpdateStatusDto } from 'src/table/dto/update-status.dto';
 import { CreateStatusDto } from 'src/table/dto/create-status.dto';
 import { ApiOperation, ApiResponse, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
-import { TableEntity } from 'src/table/entities/table.entity';
-import { RowEntity } from 'src/table/entities/row.entity';
-import { ColumnEntity } from 'src/table/entities/column.entity';
-import { CellEntity } from 'src/table/entities/cell.entity';
-import { StatusEntity } from 'src/table/entities/status.entity';
-import { FullTableDto } from 'src/table/dto/get-tables.dto';
+import {
+  CellResponse,
+  ColumnResponse,
+  CreateColumnParams,
+  CreateRowParams,
+  CreateStatusParams,
+  CreateTableParams,
+  EditCellParams,
+  EditColumnParams,
+  RowResponse,
+  StatusResponse,
+  TableResponse,
+  TableResponseFullData,
+  UpdateStatusParams,
+  UpdateTableParams,
+} from 'src/table/dto/swagger.dto';
 
 @ApiTags('table')
 @Controller('table')
@@ -38,7 +48,12 @@ export class TableController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all tables' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: TableEntity, isArray: true })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Success',
+    type: TableResponse,
+    isArray: true,
+  })
   getTables(@Request() req) {
     return this.tableService.getTableByUserId(req.user.id);
   }
@@ -47,7 +62,7 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get table by ID' })
   @ApiParam({ name: 'tableId', required: true, description: 'tableId identifier' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: FullTableDto })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: TableResponseFullData })
   getTable(@Request() req, @Param('tableId') tableId) {
     return this.tableService.getTableById(tableId, req.user.id);
   }
@@ -55,9 +70,9 @@ export class TableController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
-  @ApiBody({ required: true, type: CreateTableDto })
+  @ApiBody({ required: true, type: CreateTableParams })
   @ApiOperation({ summary: 'Create Table' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: TableEntity })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: TableResponse })
   createTable(@Request() req, @Body() createTableDto: CreateTableDto) {
     return this.tableService.createTable(createTableDto, req.user.id);
   }
@@ -65,8 +80,8 @@ export class TableController {
   @Put()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update table by ID' })
-  @ApiBody({ required: true, type: UpdateTableDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: TableEntity })
+  @ApiBody({ required: true, type: UpdateTableParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: TableResponse })
   async updateTable(@Request() req, @Body() updateTableDto: UpdateTableDto) {
     return this.tableService.updateTable(updateTableDto, req.user.id);
   }
@@ -85,8 +100,8 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Create Row' })
-  @ApiBody({ required: true, type: CreateRowDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: RowEntity })
+  @ApiBody({ required: true, type: CreateRowParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: RowResponse })
   createRow(@Request() req, @Body() createRowDto: CreateRowDto) {
     return this.tableService.createRow(createRowDto, req.user.id);
   }
@@ -106,8 +121,8 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Create Column' })
-  @ApiBody({ required: true, type: CreateColumnDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: ColumnEntity })
+  @ApiBody({ required: true, type: CreateColumnParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: ColumnResponse })
   async createColumn(@Request() req, @Body() createColumnDto: CreateColumnDto) {
     return await this.tableService.createColumn(createColumnDto, req.user.id);
   }
@@ -116,8 +131,8 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update Column' })
-  @ApiBody({ required: true, type: EditColumnDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: ColumnEntity })
+  @ApiBody({ required: true, type: EditColumnParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: ColumnResponse })
   editColumn(@Request() req, @Body() editColumnDto: EditColumnDto) {
     return this.tableService.editColumn(editColumnDto, req.user.id);
   }
@@ -137,8 +152,8 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update Cell' })
-  @ApiBody({ required: true, type: EditCellDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CellEntity })
+  @ApiBody({ required: true, type: EditCellParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CellResponse })
   editCell(@Request() req, @Body() editCellDto: EditCellDto) {
     return this.tableService.editCell(editCellDto, req.user.id);
   }
@@ -148,7 +163,7 @@ export class TableController {
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Get column statuses' })
   @ApiParam({ name: 'columnId', required: true, description: 'columnId identifier' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: StatusEntity, isArray: true })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: StatusResponse, isArray: true })
   getStatusesByColumnId(@Request() req, @Param('columnId') columnId) {
     return this.tableService.getStatusesByColumnId(columnId, req.user.id);
   }
@@ -157,8 +172,8 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Update column status' })
-  @ApiBody({ required: true, type: UpdateStatusDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: StatusEntity })
+  @ApiBody({ required: true, type: UpdateStatusParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: StatusResponse })
   updateStatus(@Request() req, @Body() updateStatusDto: UpdateStatusDto) {
     return this.tableService.updateStatus(updateStatusDto, req.user.id);
   }
@@ -167,8 +182,8 @@ export class TableController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   @ApiOperation({ summary: 'Create column status' })
-  @ApiBody({ required: true, type: CreateStatusDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: StatusEntity })
+  @ApiBody({ required: true, type: CreateStatusParams })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: StatusResponse })
   createStatus(@Request() req, @Body() createStatusDto: CreateStatusDto) {
     return this.tableService.createStatus(createStatusDto, req.user.id);
   }
